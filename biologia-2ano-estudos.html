@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Herbário de Estudos — Biologia 2º ano · 2º semestre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --forest-deep:#122318;
+    --forest-mid:#1f3d2a;
+    --leaf:#4c8c5b;
+    --leaf-soft:#7fae7f;
+    --paper:#ece5d1;
+    --paper-2:#e2d9bf;
+    --ink:#1c2419;
+    --ink-soft:#4a5142;
+    --gold:#c99a3f;
+    --river:#3e7c8c;
+    --clay:#a6512f;
+    --line: rgba(28,36,25,0.16);
+    --radius: 3px;
+    --shadow: 0 8px 24px rgba(9,20,12,0.28);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--forest-deep);
+    background-image:
+      radial-gradient(ellipse at top left, rgba(76,140,91,0.18), transparent 55%),
+      radial-gradient(ellipse at bottom right, rgba(62,124,140,0.14), transparent 55%);
+    color: var(--ink);
+    font-family:'Work Sans', sans-serif;
+    min-height:100vh;
+    padding: 22px 14px 60px;
+  }
+  .wrap{max-width:920px; margin:0 auto;}
+  .brandbar{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    color: var(--paper); margin-bottom:18px; flex-wrap:wrap;
+  }
+  .brand{display:flex; align-items:center; gap:12px;}
+  .brand svg{width:38px;height:38px;flex-shrink:0;}
+  .brand h1{
+    font-family:'Fraunces', serif; font-weight:600; font-size:1.35rem; margin:0; line-height:1.1;
+    letter-spacing:0.2px;
+  }
+  .brand p{margin:2px 0 0; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--leaf-soft); font-family:'IBM Plex Mono',monospace;}
+  .schoolline{font-size:0.72rem; color:rgba(236,229,209,0.65); font-family:'IBM Plex Mono',monospace; text-align:right;}
+
+  nav.tabs{
+    display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; margin-bottom:18px;
+    scrollbar-width:thin;
+  }
+  nav.tabs button{
+    font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.06em;
+    text-transform:uppercase; white-space:nowrap; padding:9px 14px; border-radius:999px;
+    border:1px solid rgba(236,229,209,0.28); background:rgba(18,35,24,0.4); color:var(--paper);
+    cursor:pointer; transition:all .15s ease;
+  }
+  nav.tabs button:hover{background:rgba(76,140,91,0.35);}
+  nav.tabs button.active{background:var(--gold); color:#1c2419; border-color:var(--gold); font-weight:600;}
+
+  .card{
+    background: var(--paper);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 26px 26px 22px;
+    position:relative;
+    border:1px solid var(--paper-2);
+  }
+  .card + .card{margin-top:16px;}
+  .card::before{
+    content:''; position:absolute; left:0; top:18px; bottom:18px; width:3px;
+    background: linear-gradient(180deg, var(--leaf), var(--river));
+    border-radius:2px;
+  }
+  .card-inner{padding-left:14px;}
+
+  h2.section-title{
+    font-family:'Fraunces', serif; font-weight:600; font-size:1.5rem; margin:0 0 4px;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.12em;
+    text-transform:uppercase; color:var(--river); margin:0 0 8px; display:block;
+  }
+  .sub{color:var(--ink-soft); font-size:0.92rem; margin:0 0 16px; max-width:60ch;}
+
+  /* ---------- HOME / COUNTDOWN ---------- */
+  .countdown-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px;}
+  @media (max-width:560px){.countdown-grid{grid-template-columns:1fr;}}
+  .count-box{
+    border:1px dashed var(--line); border-radius:2px; padding:16px 16px 14px; background:rgba(255,255,255,0.35);
+  }
+  .count-box .label{font-family:'IBM Plex Mono',monospace; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft);}
+  .count-box .num{font-family:'Fraunces',serif; font-size:2.6rem; font-weight:600; line-height:1; margin:6px 0 2px; color:var(--forest-mid);}
+  .count-box .num small{font-size:1rem; font-weight:500; font-family:'Work Sans',sans-serif;}
+  .count-box .date{font-size:0.82rem; color:var(--ink-soft);}
+  .count-box.done .num{color:var(--gold);}
+
+  .timeline{margin-top:22px; border-top:1px solid var(--line); padding-top:16px;}
+  .tline-item{display:flex; gap:12px; padding:8px 0; border-bottom:1px solid var(--line); align-items:baseline;}
+  .tline-item:last-child{border-bottom:none;}
+  .tline-date{font-family:'IBM Plex Mono',monospace; font-size:0.76rem; color:var(--river); min-width:108px; flex-shrink:0;}
+  .tline-text{font-size:0.88rem; color:var(--ink);}
+  .tline-text b{color:var(--forest-mid);}
+
+  .note-box{
+    margin-top:18px; background:rgba(62,124,140,0.1); border-left:3px solid var(--river);
+    padding:12px 14px; font-size:0.82rem; color:var(--ink-soft); border-radius:2px;
+  }
+
+  /* ---------- TOPIC LIST ---------- */
+  .topic-list{display:grid; gap:12px;}
+  .specimen{
+    background:var(--paper); border:1px solid var(--paper-2); border-radius:var(--radius);
+    padding:16px 18px; cursor:pointer; display:flex; justify-content:space-between; align-items:center;
+    gap:14px; box-shadow:0 3px 10px rgba(9,20,12,0.14); transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .specimen:hover{transform:translateY(-2px); box-shadow:0 8px 20px rgba(9,20,12,0.22);}
+  .specimen .code{font-family:'IBM Plex Mono',monospace; font-size:0.68rem; color:var(--river); letter-spacing:0.08em;}
+  .specimen h3{font-family:'Fraunces',serif; font-size:1.08rem; margin:3px 0 0; font-weight:600; color:var(--forest-mid);}
+  .specimen .meta{font-size:0.76rem; color:var(--ink-soft); margin-top:2px;}
+  .progress-pill{
+    font-family:'IBM Plex Mono',monospace; font-size:0.7rem; padding:5px 10px; border-radius:999px;
+    background:var(--forest-mid); color:var(--paper); flex-shrink:0; white-space:nowrap;
+  }
+  .progress-pill.zero{background:rgba(28,36,25,0.12); color:var(--ink-soft);}
+
+  /* ---------- TOPIC DETAIL ---------- */
+  .backlink{
+    font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--paper); background:none;
+    border:none; cursor:pointer; text-decoration:underline; padding:0; margin-bottom:12px; display:inline-block;
+  }
+  .subtabs{display:flex; gap:8px; margin:14px 0 18px; flex-wrap:wrap;}
+  .subtabs button{
+    font-family:'Work Sans',sans-serif; font-weight:600; font-size:0.82rem; padding:8px 16px;
+    border-radius:2px; border:1px solid var(--forest-mid); background:transparent; color:var(--forest-mid); cursor:pointer;
+  }
+  .subtabs button.active{background:var(--forest-mid); color:var(--paper);}
+
+  .resumo-body p{font-size:0.95rem; line-height:1.65; margin:0 0 14px; color:var(--ink);}
+  .resumo-body ul{margin:0 0 14px; padding-left:20px;}
+  .resumo-body li{font-size:0.93rem; line-height:1.6; margin-bottom:6px;}
+  .resumo-body h4{font-family:'Fraunces',serif; font-size:1.02rem; font-weight:600; color:var(--forest-mid); margin:22px 0 8px; border-bottom:1px solid var(--line); padding-bottom:4px;}
+  .curio-box{
+    background:rgba(201,154,63,0.14); border-left:3px solid var(--gold); border-radius:2px;
+    padding:12px 14px; margin:6px 0 16px;
+  }
+  .curio-box .tag{font-family:'IBM Plex Mono',monospace; font-size:0.66rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--gold); display:block; margin-bottom:4px; font-weight:600;}
+  .curio-box p{margin:0; font-size:0.88rem; color:var(--ink-soft);}
+  .example-box{
+    background:rgba(76,140,91,0.1); border-left:3px solid var(--leaf); border-radius:2px;
+    padding:12px 14px; margin:6px 0 16px; font-family:'IBM Plex Mono',monospace; font-size:0.82rem;
+    line-height:1.7; color:var(--forest-mid);
+  }
+  .example-box .tag{font-family:'Work Sans',sans-serif; text-transform:uppercase; letter-spacing:0.08em; font-size:0.66rem; color:var(--leaf); display:block; margin-bottom:5px; font-weight:700;}
+
+  /* flashcards */
+  .flash-wrap{display:flex; flex-direction:column; align-items:center; gap:14px;}
+  .flash-count{font-family:'IBM Plex Mono',monospace; font-size:0.75rem; color:var(--ink-soft);}
+  .flashcard{
+    width:100%; max-width:480px; min-height:200px; perspective:1200px; cursor:pointer;
+  }
+  .flashcard-inner{
+    position:relative; width:100%; height:100%; min-height:200px; transition:transform .5s;
+    transform-style:preserve-3d;
+  }
+  .flashcard.flipped .flashcard-inner{transform:rotateY(180deg);}
+  .flash-face{
+    position:absolute; inset:0; backface-visibility:hidden; border-radius:4px;
+    display:flex; align-items:center; justify-content:center; text-align:center; padding:22px;
+    border:1.5px solid var(--forest-mid);
+  }
+  .flash-front{background:var(--paper-2); color:var(--forest-mid); font-family:'Fraunces',serif; font-size:1.15rem; font-weight:600;}
+  .flash-back{background:var(--forest-mid); color:var(--paper); transform:rotateY(180deg); font-size:0.95rem; line-height:1.5;}
+  .flash-hint{font-size:0.68rem; font-family:'IBM Plex Mono',monospace; position:absolute; bottom:10px; right:14px; opacity:0.6;}
+  .flash-nav{display:flex; gap:10px; margin-top:4px;}
+  .btn{
+    font-family:'Work Sans',sans-serif; font-weight:600; font-size:0.85rem; padding:9px 18px;
+    border-radius:2px; border:1.5px solid var(--forest-mid); background:var(--forest-mid); color:var(--paper);
+    cursor:pointer;
+  }
+  .btn.ghost{background:transparent; color:var(--forest-mid);}
+  .btn:disabled{opacity:0.35; cursor:not-allowed;}
+
+  /* quiz */
+  .quiz-q{font-family:'Fraunces',serif; font-size:1.05rem; font-weight:600; margin-bottom:14px; color:var(--forest-mid);}
+  .quiz-progress{font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--ink-soft); margin-bottom:10px;}
+  .opt{
+    display:block; width:100%; text-align:left; padding:11px 14px; margin-bottom:9px; border-radius:2px;
+    border:1.5px solid var(--line); background:rgba(255,255,255,0.5); cursor:pointer; font-size:0.9rem; font-family:'Work Sans';
+  }
+  .opt:hover{border-color:var(--river);}
+  .opt.correct{background:rgba(76,140,91,0.28); border-color:var(--leaf); font-weight:600;}
+  .opt.wrong{background:rgba(166,81,47,0.22); border-color:var(--clay);}
+  .opt.disabled{pointer-events:none;}
+  .quiz-feedback{font-size:0.85rem; margin-top:6px; margin-bottom:14px; color:var(--ink-soft);}
+  .quiz-result{text-align:center; padding:20px 0;}
+  .quiz-result .score{font-family:'Fraunces',serif; font-size:3rem; font-weight:700; color:var(--forest-mid);}
+  .quiz-result p{color:var(--ink-soft); font-size:0.9rem;}
+
+  /* progress page */
+  .prog-row{display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--line);}
+  .prog-row:last-child{border-bottom:none;}
+  .prog-row .pname{flex:1; font-size:0.88rem; font-weight:600; color:var(--forest-mid);}
+  .bar-track{width:120px; height:8px; background:var(--paper-2); border-radius:4px; overflow:hidden; flex-shrink:0;}
+  .bar-fill{height:100%; background:linear-gradient(90deg, var(--leaf), var(--gold));}
+  .prog-num{font-family:'IBM Plex Mono',monospace; font-size:0.76rem; width:48px; text-align:right; flex-shrink:0; color:var(--ink-soft);}
+
+  footer{text-align:center; color:rgba(236,229,209,0.45); font-size:0.72rem; margin-top:26px; font-family:'IBM Plex Mono',monospace;}
+
+  ::-webkit-scrollbar{height:6px;}
+  ::-webkit-scrollbar-thumb{background:var(--leaf-soft); border-radius:4px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brandbar">
+    <div class="brand">
+      <svg viewBox="0 0 48 48" fill="none"><path d="M24 44C24 44 8 36 8 20C8 10 16 4 24 4C32 4 40 10 40 20C40 36 24 44 24 44Z" fill="#4c8c5b" opacity="0.9"/><path d="M24 44V16" stroke="#122318" stroke-width="2"/><path d="M24 22C24 22 16 20 14 14" stroke="#122318" stroke-width="1.6" stroke-linecap="round"/><path d="M24 30C24 30 33 27 35 20" stroke="#122318" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <div>
+        <h1>Herbário de Estudos</h1>
+        <p>Biologia · 2º ano · 2º semestre</p>
+      </div>
+    </div>
+    <div class="schoolline">SEDUC-PA · Ano letivo 2026</div>
+  </div>
+
+  <nav class="tabs" id="mainTabs"></nav>
+  <div id="app"></div>
+
+  <footer>Conteúdos e datas organizados a partir do calendário letivo oficial da SEDUC-PA para 2026.</footer>
+</div>
+
+<script>
+/* ============ DATA ============ */
+const CAL = {
+  inicioAno: '2026-02-02',
+  inicio2Sem: '2026-08-03',
+  fim3Bim: '2026-10-08',
+  inicio4Bim: '2026-10-13',
+  fim4Bim: '2026-12-23',
+  timeline: [
+    {date:'2026-08-03', label:'Início do 2º semestre e do <b>3º bimestre</b>'},
+    {date:'2026-09-07', label:'Feriado — Independência do Brasil'},
+    {date:'2026-10-08', label:'Prazo final das avaliações do <b>3º bimestre (Genética)</b>'},
+    {date:'2026-10-13', label:'Início do <b>4º bimestre</b> (Evolução &amp; Ecologia)'},
+    {date:'2026-10-15', label:'Dia do Professor'},
+    {date:'2026-11-02', label:'Feriado — Finados'},
+    {date:'2026-11-15', label:'Feriado — Proclamação da República'},
+    {date:'2026-12-23', label:'Prazo final das avaliações do <b>4º bimestre</b> e encerramento do ano letivo'},
+  ]
+};
+
+const TOPICS = [
+  {
+    id:'gen1', bim:3, code:'GEN-01', title:'Fundamentos da Genética e 1ª Lei de Mendel',
+    meta:'Genótipo, fenótipo, dominância e segregação',
+    resumo:`<p>A Genética estuda como as características são transmitidas dos pais para os filhos. <b>Gene</b> é o segmento de DNA responsável por uma característica, ocupando uma posição fixa no cromossomo chamada <b>locus</b>. <b>Alelo</b> é cada uma das formas alternativas desse gene. Um indivíduo <b>homozigoto</b> tem dois alelos iguais no locus (AA ou aa) e um <b>heterozigoto</b> tem alelos diferentes (Aa).</p>
+    <p><b>Genótipo</b> é a constituição genética do indivíduo (ex: Aa); <b>fenótipo</b> é a característica observável, resultado da interação entre o genótipo e o ambiente — por isso dois indivíduos com o mesmo genótipo podem apresentar fenótipos ligeiramente diferentes conforme as condições em que vivem.</p>
+
+    <h4>O contexto histórico: o monge que virou cientista</h4>
+    <p>Gregor Mendel (1822–1884) era monge agostiniano no mosteiro de Brno (atual República Tcheca) e conduziu, entre 1856 e 1863, experimentos rigorosos com a ervilha-de-cheiro (<i>Pisum sativum</i>). A escolha da planta não foi acaso: as ervilhas têm autofecundação natural (o que permite obter <b>linhagens puras</b>, geração após geração idênticas), ciclo de vida curto, fácil cultivo e sete características bem contrastantes e fáceis de contar — como semente lisa/rugosa e flor púrpura/branca — sem gradações intermediárias que confundissem a contagem.</p>
+    <p>Mendel publicou seus resultados em 1866, mas o trabalho foi praticamente ignorado pela comunidade científica da época. Só em 1900, dezesseis anos após sua morte, três pesquisadores — Hugo de Vries, Carl Correns e Erich von Tschermak — redescobriram, de forma independente, os mesmos padrões, resgatando o trabalho de Mendel e consolidando-o como o "pai da Genética".</p>
+
+    <p>A <b>1ª Lei de Mendel (Lei da Segregação ou Lei da Pureza dos Gametas)</b> afirma que cada característica é determinada por um par de fatores (hoje chamados alelos) que se separam na formação dos gametas — cada gameta recebe apenas um deles, nunca os dois juntos. Essa separação ocorre fisicamente durante a <b>anáfase I da meiose</b>, quando os cromossomos homólogos (que carregam os alelos) se afastam para polos opostos da célula.</p>
+
+    <div class="example-box"><span class="tag">Exemplo resolvido</span>
+    Cruzamento de uma linhagem pura de ervilhas altas (TT) com uma linhagem pura de ervilhas baixas (tt):<br>
+    P:  TT (alta)  ×  tt (baixa)<br>
+    F1: 100% Tt — todas altas (dominância completa)<br>
+    Autofecundando F1 (Tt × Tt), obtém-se F2:<br>
+    Genótipos → 1 TT : 2 Tt : 1 tt<br>
+    Fenótipos → 3 altas : 1 baixa
+    </div>
+
+    <ul>
+      <li>Cruzamento Aa × Aa → proporção genotípica 1 AA : 2 Aa : 1 aa</li>
+      <li>Cruzamento Aa × Aa → proporção fenotípica 3 (dominante) : 1 (recessivo)</li>
+      <li><b>Cruzamento-teste (testcross)</b>: cruza-se um indivíduo de fenótipo dominante e genótipo desconhecido com um homozigoto recessivo. Se toda a prole for dominante, o indivíduo testado era homozigoto (AA); se metade da prole for recessiva, ele era heterozigoto (Aa)</li>
+    </ul>
+
+    <div class="curio-box"><span class="tag">Curiosidade</span><p>Nem toda característica segue a dominância completa que Mendel observou nas ervilhas. Em muitas espécies existe <b>dominância incompleta</b> (o heterozigoto tem fenótipo intermediário, como a flor rosa do cruzamento entre boca-de-leão vermelha e branca) — um tema que retomamos em Extensões da Genética Mendeliana (GEN-03).</p></div>
+
+    <h4>Como isso cai na prova</h4>
+    <p>Questões de vestibular e ENEM costumam apresentar um <b>heredograma</b> (árvore genealógica) e pedir para identificar o padrão de herança e calcular probabilidades de descendência. Treine sempre escrevendo os genótipos dos pais antes de montar o quadro de Punnett — isso evita erros de contagem nas proporções.</p>`,
+    flash:[
+      {f:'O que é um alelo?', b:'Cada uma das formas alternativas de um gene, localizadas em loci correspondentes de cromossomos homólogos.'},
+      {f:'Proporção fenotípica de Aa × Aa?', b:'3:1 — três dominantes para um recessivo.'},
+      {f:'O que enuncia a 1ª Lei de Mendel?', b:'Cada característica é determinada por um par de alelos que se separam na formação dos gametas; cada gameta recebe apenas um deles.'},
+      {f:'Para que serve o cruzamento-teste?', b:'Para descobrir se um indivíduo de fenótipo dominante é homozigoto ou heterozigoto, cruzando-o com um homozigoto recessivo.'},
+      {f:'Proporção genotípica de Aa × Aa?', b:'1 AA : 2 Aa : 1 aa'},
+    ],
+    quiz:[
+      {q:'Em ervilhas, a cor amarela (V) é dominante sobre a verde (v). O cruzamento Vv × vv produz:', opts:['100% amarelas','3 amarelas : 1 verde','1 amarela : 1 verde','100% verdes','proporção 9:3:3:1'], correct:2},
+      {q:'Um indivíduo heterozigoto para uma característica é representado por:', opts:['AA','aa','Aa','AAA','a'], correct:2},
+      {q:'A 1ª Lei de Mendel também é conhecida como:', opts:['Lei da segregação independente','Lei da recombinação','Lei da segregação dos fatores (pureza dos gametas)','Lei da ligação gênica','Lei da dominância incompleta'], correct:2},
+      {q:'Em Aa × Aa, a chance de um filho ser homozigoto recessivo (aa) é:', opts:['0%','25%','50%','75%','100%'], correct:1},
+      {q:'O fenótipo de um organismo corresponde a:', opts:['seu conjunto de genes','suas características observáveis, resultado do genótipo e do ambiente','apenas seus cromossomos sexuais','seu cariótipo','sua sequência de DNA'], correct:1},
+    ]
+  },
+  {
+    id:'gen2', bim:3, code:'GEN-02', title:'2ª Lei de Mendel — Di-hibridismo',
+    meta:'Segregação independente e proporção 9:3:3:1',
+    resumo:`<p>Depois de estabelecer como uma única característica é herdada, Mendel foi além: cruzou ervilhas que diferiam em <b>duas</b> características ao mesmo tempo (por exemplo, cor da semente e textura da semente) para verificar se a herança de uma interferia na da outra. A <b>2ª Lei de Mendel (Lei da Segregação Independente)</b> afirma que genes localizados em cromossomos diferentes segregam de forma independente durante a formação dos gametas — a herança de uma característica não interfere na herança da outra.</p>
+
+    <h4>Por que a segregação é "independente"?</h4>
+    <p>A base física dessa lei está na <b>metáfase I da meiose</b>: os pares de cromossomos homólogos se organizam ao acaso no equador da célula, de modo que a orientação de um par não influencia a orientação dos demais pares. É esse sorteio geométrico, repetido para milhões de células, que gera a combinação aleatória de alelos de genes diferentes nos gametas.</p>
+
+    <p>No cruzamento di-híbrido clássico <b>AaBb × AaBb</b> (genes em cromossomos diferentes), cada progenitor forma 4 tipos de gametas em proporções iguais: AB, Ab, aB e ab (25% cada). Montando o quadro de Punnett com 16 combinações, chega-se a:</p>
+    <ul>
+      <li>Proporção fenotípica: <b>9:3:3:1</b> (4 classes fenotípicas — 9 com as duas características dominantes, 3 e 3 com uma de cada, 1 com as duas recessivas)</li>
+      <li>Proporção genotípica: 9 combinações genotípicas diferentes</li>
+    </ul>
+
+    <div class="example-box"><span class="tag">Exemplo resolvido — regra do produto</span>
+    Em vez de montar o quadro de 16 caselas inteiro, é mais rápido calcular cada característica separadamente e multiplicar as probabilidades:<br>
+    P(dominante em A) = 3/4  ·  P(dominante em B) = 3/4  →  3/4 × 3/4 = 9/16<br>
+    P(recessivo em A) = 1/4  ·  P(recessivo em B) = 1/4  →  1/4 × 1/4 = 1/16<br>
+    Essa é a <b>regra do "e"</b> (regra do produto): eventos independentes multiplicam-se.
+    </div>
+
+    <p>Um recurso muito usado para <b>confirmar</b> se dois genes seguem mesmo a segregação independente é o <b>cruzamento-teste di-híbrido</b>: cruza-se AaBb com o duplo recessivo aabb. Se os genes forem realmente independentes, a prole aparece em proporção <b>1:1:1:1</b> entre as quatro combinações fenotípicas possíveis.</p>
+
+    <p>Essa lei só vale plenamente para genes em cromossomos <b>diferentes</b> (ou muito distantes no mesmo cromossomo). Quando os genes estão fisicamente próximos no <b>mesmo cromossomo</b> (genes ligados), eles tendem a ser herdados juntos, e a proporção 9:3:3:1 não se confirma — fenômeno estudado mais tarde por Thomas Hunt Morgan, em experimentos com a mosca-da-fruta (<i>Drosophila melanogaster</i>), que deu origem ao conceito de <b>ligação gênica</b> e <b>crossing-over</b> (recombinação gênica na prófase I da meiose).</p>
+
+    <div class="curio-box"><span class="tag">Curiosidade</span><p>A <i>Drosophila melanogaster</i> é usada em laboratórios genéticos até hoje por gerar uma nova geração a cada 10 dias e ter apenas 4 pares de cromossomos — características que a tornaram o organismo-modelo que permitiu mapear os primeiros genes ligados na história da Genética, no início do século XX.</p></div>`,
+    flash:[
+      {f:'O que enuncia a 2ª Lei de Mendel?', b:'Genes localizados em cromossomos diferentes segregam de forma independente durante a formação dos gametas.'},
+      {f:'Proporção fenotípica clássica de AaBb × AaBb?', b:'9:3:3:1'},
+      {f:'Quantos tipos de gametas um indivíduo AaBb produz (genes independentes)?', b:'4 tipos: AB, Ab, aB e ab.'},
+      {f:'Por que a 2ª Lei não vale para genes ligados?', b:'Porque genes no mesmo cromossomo tendem a ser herdados juntos, não segregando de forma totalmente independente.'},
+      {f:'Quantos genótipos diferentes surgem em AaBb × AaBb?', b:'9 genótipos diferentes.'},
+    ],
+    quiz:[
+      {q:'No cruzamento AaBb × AaBb (genes em cromossomos diferentes), a proporção fenotípica esperada é:', opts:['3:1','1:1','9:3:3:1','1:2:1','15:1'], correct:2},
+      {q:'Um indivíduo AaBb (genes independentes) produz gametas do tipo:', opts:['apenas AB e ab','AB, Ab, aB e ab','apenas Ab e aB','apenas AABB','nenhum gameta viável'], correct:1},
+      {q:'A segregação independente ocorre porque:', opts:['os genes estão sempre ligados','os cromossomos homólogos se separam de forma independente entre si na meiose','só existe um par de cromossomos','os genes recessivos sempre dominam','não há meiose no di-hibridismo'], correct:1},
+      {q:'A proporção 9:3:3:1 do di-hibridismo refere-se a quantas classes fenotípicas?', opts:['2','3','4','9','16'], correct:2},
+      {q:'Se dois genes estão no MESMO cromossomo (ligados), o cruzamento tende a:', opts:['seguir exatamente 9:3:3:1','fugir de 9:3:3:1, favorecendo combinações parentais','ser sempre letal','impedir a meiose','gerar apenas fenótipos recessivos'], correct:1},
+    ]
+  },
+  {
+    id:'gen3', bim:3, code:'GEN-03', title:'Extensões da Genética Mendeliana',
+    meta:'Codominância, alelos múltiplos, epistasia e herança poligênica',
+    resumo:`<p>Nem toda herança segue exatamente o padrão simples de Mendel, com um gene, dois alelos e dominância completa. Ao longo do século XX, geneticistas descreveram diversos "desvios" da herança mendeliana clássica — que, na verdade, não contradizem as Leis de Mendel, apenas mostram que a relação entre genótipo e fenótipo pode ser mais complexa.</p>
+
+    <h4>Sistema ABO: alelos múltiplos + codominância juntos</h4>
+    <p>O gene que determina o tipo sanguíneo ABO tem três alelos possíveis na população — I<sup>A</sup>, I<sup>B</sup> e i — caracterizando <b>alelos múltiplos</b> (cada pessoa porta apenas dois deles). Os alelos I<sup>A</sup> e I<sup>B</sup> são <b>codominantes</b> entre si e ambos dominantes sobre i.</p>
+    <div class="example-box"><span class="tag">Tabela de genótipos do sistema ABO</span>
+    Tipo A → I<sup>A</sup>I<sup>A</sup> ou I<sup>A</sup>i<br>
+    Tipo B → I<sup>B</sup>I<sup>B</sup> ou I<sup>B</sup>i<br>
+    Tipo AB → I<sup>A</sup>I<sup>B</sup> (codominância — as duas proteínas aparecem juntas na membrana da hemácia)<br>
+    Tipo O → ii
+    </div>
+    <p>Além do sistema ABO, existe o <b>fator Rh</b> (Rh+ dominante sobre Rh-), herdado de forma independente. A combinação dos dois sistemas é o que define, por exemplo, se alguém é "O negativo" — o chamado doador universal, já que hemácias O- não têm os antígenos A, B nem o fator Rh que poderiam provocar reação imunológica no receptor.</p>
+    <div class="curio-box"><span class="tag">Curiosidade</span><p>Bancos de sangue, como o HEMOPA aqui no Pará, dependem diretamente desse conhecimento de Genética para garantir transfusões seguras: cruzar o tipo sanguíneo errado pode causar aglutinação das hemácias e reações graves no paciente.</p></div>
+
+    <h4>Epistasia: quando um gene "cala" outro</h4>
+    <p><b>Epistasia</b> é a interação em que um gene (chamado epistático) mascara ou inibe a expressão fenotípica de outro gene não alelo a ele (chamado hipostático). Um exemplo didático clássico é a cor da pelagem em Labradores: um gene determina se o pigmento é preto ou marrom (chocolate), mas outro gene, em outro lócus, controla se o pigmento é depositado no pelo. Se o cão for homozigoto recessivo para esse segundo gene, a pelagem fica <b>dourada/creme</b> independentemente do genótipo do primeiro gene — o segundo gene "esconde" o efeito do primeiro.</p>
+
+    <h4>Pleiotropia: um gene, vários efeitos</h4>
+    <p><b>Pleiotropia</b> ocorre quando um único gene influencia mais de uma característica do organismo. A anemia falciforme é um exemplo humano importante: a mutação em um único gene altera a hemoglobina, mas seus efeitos se espalham por várias partes do corpo — hemácias em formato de foice, obstrução de vasos sanguíneos, dores articulares, dano em órgãos e maior resistência à malária em heterozigotos (um exemplo de vantagem do heterozigoto, retomado em Evolução).</p>
+
+    <h4>Herança quantitativa (poligênica)</h4>
+    <p>Na <b>herança poligênica</b>, várias combinações de genes (cada um com efeito pequeno e aditivo) controlam uma mesma característica, gerando variação contínua e gradual — sem classes fenotípicas nitidamente separadas, mas sim uma distribuição em forma de sino (curva normal). A cor da pele humana é o exemplo mais estudado: estima-se que pelo menos 3 a 4 pares de genes contribuam aditivamente para a quantidade de melanina produzida, o que explica a enorme diversidade de tons de pele observada entre populações humanas — inclusive dentro de uma mesma família. A estatura humana segue o mesmo padrão.</p>
+
+    <div class="curio-box"><span class="tag">Fique atento na prova</span><p>Uma pegadinha comum: alelos múltiplos, codominância, epistasia e herança poligênica são conceitos diferentes, mas frequentemente aparecem juntos na mesma questão — o sistema ABO, por exemplo, é ao mesmo tempo um caso de alelos múltiplos <b>e</b> de codominância.</p></div>`,
+    flash:[
+      {f:'O que é codominância?', b:'Os dois alelos de um par se expressam simultaneamente no fenótipo, sem que um domine o outro (ex: tipo sanguíneo AB).'},
+      {f:'O que são alelos múltiplos?', b:'Quando um gene tem mais de duas formas alélicas possíveis na população, embora cada indivíduo tenha apenas duas (ex: sistema ABO — IA, IB e i).'},
+      {f:'O que é epistasia?', b:'Interação em que um gene inibe ou mascara a expressão fenotípica de outro gene não alelo.'},
+      {f:'O que é pleiotropia?', b:'Quando um único gene influencia mais de uma característica do organismo.'},
+      {f:'O que é herança quantitativa (poligênica)?', b:'Herança em que várias combinações gênicas controlam uma característica, gerando variação contínua (ex: cor da pele humana).'},
+    ],
+    quiz:[
+      {q:'O sistema sanguíneo ABO é um exemplo clássico de:', opts:['herança ligada ao sexo','alelos múltiplos com codominância entre IA e IB','herança citoplasmática','mutação letal','epistasia dominante'], correct:1},
+      {q:'Uma pessoa do tipo sanguíneo AB tem genótipo:', opts:['IAIA','IBIB','IAIB','ii','IAi'], correct:2},
+      {q:'Epistasia é quando:', opts:['dois alelos do mesmo gene se expressam juntos','um gene mascara a expressão de outro gene não alelo','um gene está sempre ligado ao X','o ambiente altera diretamente o DNA','ocorre crossing-over obrigatório'], correct:1},
+      {q:'A cor da pele humana é um exemplo de herança:', opts:['mendeliana simples','ligada ao sexo','quantitativa (poligênica)','citoplasmática','letal'], correct:2},
+      {q:'Pleiotropia ocorre quando:', opts:['vários genes controlam uma característica','um gene afeta várias características do organismo','dois genes estão sempre no mesmo cromossomo','um alelo é sempre recessivo','não há segregação de alelos'], correct:1},
+    ]
+  },
+  {
+    id:'gen4', bim:3, code:'GEN-04', title:'Genética do Sexo, Mutações e Síndromes',
+    meta:'Herança ligada ao X e alterações cromossômicas',
+    resumo:`<p>Em humanos, o sexo é determinado pelos cromossomos sexuais: <b>XX</b> (mulheres) e <b>XY</b> (homens), sendo o cromossomo Y responsável por desencadear o desenvolvimento testicular através do gene SRY. Genes localizados no cromossomo X causam padrões característicos de herança — as condições <b>ligadas ao X</b>, como <b>daltonismo</b> e <b>hemofilia</b>, são recessivas e mais comuns em homens, que possuem apenas um cromossomo X (por isso, um único alelo recessivo já é suficiente para manifestar a condição — condição chamada de <b>hemizigose</b>).</p>
+
+    <div class="curio-box"><span class="tag">Curiosidade histórica</span><p>A hemofilia ficou conhecida como "a doença dos reis" porque a rainha Vitória da Inglaterra (1819–1901) era portadora do alelo recessivo e o transmitiu a descendentes que se casaram com famílias reais de toda a Europa — inclusive à família imperial russa, atingindo o czarevitch Alexei Romanov. É um dos casos de herança ligada ao X mais estudados em genealogias históricas.</p></div>
+
+    <div class="curio-box"><span class="tag">Curiosidade</span><p>Como as mulheres têm dois cromossomos X, mas só precisam de um ativo por célula, ocorre naturalmente a <b>inativação de um dos X</b> em cada célula (fenômeno descrito por Mary Lyon), formando o chamado <b>corpúsculo de Barr</b>. É por isso que gatas com pelagem "tartaruga" (malhas de laranja e preto) são quase sempre fêmeas: os genes de cor estão no X, e diferentes células inativam X diferentes, criando o mosaico de cores.</p></div>
+
+    <h4>Mutações: a matéria-prima da variabilidade genética</h4>
+    <p><b>Mutações</b> são alterações no material genético, que podem surgir espontaneamente (erros na duplicação do DNA) ou ser induzidas por agentes mutagênicos (radiação UV, certos produtos químicos). Apesar de a palavra "mutação" soar sempre negativa, ela é a fonte primária de toda variabilidade genética sobre a qual a seleção natural atua — tema que retomamos em Evolução (EVO-01/EVO-02). Podem ser:</p>
+    <ul>
+      <li><b>Gênicas (pontuais)</b>: alteram a sequência de um gene específico — por exemplo, a troca, perda ou inserção de uma única base do DNA, o que pode ou não mudar o aminoácido produzido e, consequentemente, a proteína final.</li>
+      <li><b>Cromossômicas estruturais</b>: alteram a estrutura de um cromossomo (deleção, duplicação, inversão ou translocação de um segmento).</li>
+      <li><b>Cromossômicas numéricas</b>: alteram o número de cromossomos inteiros, geralmente por <b>não disjunção</b> — falha na separação dos cromossomos homólogos (meiose I) ou das cromátides-irmãs (meiose II) durante a formação dos gametas.</li>
+    </ul>
+
+    <h4>Síndromes cromossômicas numéricas</h4>
+    <ul>
+      <li><b>Síndrome de Down</b>: trissomia do cromossomo 21 (47 cromossomos ao todo). É a trissomia autossômica mais comum compatível com a vida; a probabilidade de não disjunção aumenta com a idade materna avançada.</li>
+      <li><b>Síndrome de Turner</b>: cariótipo 45,X0 (falta um cromossomo sexual) — afeta apenas mulheres, que costumam apresentar baixa estatura e infertilidade.</li>
+      <li><b>Síndrome de Klinefelter</b>: cariótipo 47,XXY — afeta homens, que costumam apresentar características associadas ao excesso do cromossomo X extra.</li>
+    </ul>
+    <p>O diagnóstico dessas condições é feito por meio do <b>cariótipo</b>: uma fotografia organizada dos cromossomos de uma célula, geralmente obtida a partir de exame pré-natal (como amniocentese) ou de uma simples coleta de sangue após o nascimento.</p>
+
+    <h4>Como isso cai na prova</h4>
+    <p>Questões sobre herança ligada ao sexo costumam trazer heredogramas de famílias com casos de daltonismo ou hemofilia e pedir a probabilidade de um próximo filho nascer afetado. O truque é sempre escrever explicitamente os genótipos usando X com sobrescrito (X<sup>D</sup>, X<sup>d</sup>, Y) antes de montar o cruzamento — isso evita confundir herança autossômica com ligada ao X.</p>`,
+    flash:[
+      {f:'Por que o daltonismo é mais comum em homens?', b:'O gene está no cromossomo X; homens (XY) precisam de apenas um alelo recessivo para manifestar a condição, mulheres (XX) precisam de dois.'},
+      {f:'O que causa a síndrome de Down?', b:'Trissomia do cromossomo 21 — um cromossomo 21 extra.'},
+      {f:'Cariótipo típico da síndrome de Turner?', b:'45,X0 — ausência de um cromossomo sexual.'},
+      {f:'Cariótipo típico da síndrome de Klinefelter?', b:'47,XXY.'},
+      {f:'Diferença entre mutação gênica e cromossômica?', b:'A gênica altera a sequência de um gene específico; a cromossômica altera a estrutura ou o número de cromossomos inteiros.'},
+    ],
+    quiz:[
+      {q:'Um homem daltônico (XdY) tem filhas com uma mulher não portadora (XX). As filhas serão:', opts:['todas daltônicas','todas portadoras, não daltônicas','50% daltônicas','todas normais e não portadoras','impossível prever'], correct:1},
+      {q:'A síndrome de Down é causada por:', opts:['mutação gênica pontual','trissomia do cromossomo 21','ausência do cromossomo X','translocação obrigatória do Y','poliploidia'], correct:1},
+      {q:'O cariótipo 45,X0 corresponde a:', opts:['síndrome de Klinefelter','síndrome de Down','síndrome de Turner','indivíduo XYY','trissomia do 18'], correct:2},
+      {q:'A hemofilia é uma condição:', opts:['autossômica dominante','ligada ao cromossomo X, recessiva','ligada ao Y','mitocondrial','poligênica'], correct:1},
+      {q:'Mutações cromossômicas numéricas (trissomias) geralmente ocorrem por:', opts:['ação viral direta no DNA','não disjunção dos cromossomos na meiose','fusão binária','recombinação gênica normal','mitose comum em células somáticas'], correct:1},
+    ]
+  },
+  {
+    id:'evo1', bim:4, code:'EVO-01', title:'Teorias Evolutivas',
+    meta:'Lamarckismo, Darwinismo e Neodarwinismo',
+    resumo:`<p>Antes de Darwin, a visão dominante na ciência ocidental era o <b>fixismo</b>: a ideia, defendida pelo naturalista sueco Lineu, de que as espécies foram criadas exatamente como são e permanecem imutáveis ao longo do tempo. Duas outras correntes prepararam terreno para a evolução: o <b>catastrofismo</b> de Georges Cuvier (extinções em massa causadas por catástrofes súbitas explicariam o registro fóssil) e o <b>uniformitarismo/gradualismo</b> de James Hutton e Charles Lyell (a Terra teria sido moldada por processos lentos e graduais, ainda em ação hoje — e, se a própria Terra muda lentamente, por que não os seres vivos?).</p>
+
+    <h4>Lamarck: a primeira teoria evolutiva coerente</h4>
+    <p>Jean-Baptiste Lamarck, em 1809, foi o primeiro a propor formalmente que as espécies se transformam ao longo do tempo, guiadas por duas "leis":</p>
+    <ul>
+      <li><b>Lei do uso e desuso</b>: órgãos muito usados se desenvolvem e se fortalecem; os pouco usados se atrofiam.</li>
+      <li><b>Lei da herança dos caracteres adquiridos</b>: essas modificações adquiridas durante a vida do indivíduo seriam transmitidas à descendência.</li>
+    </ul>
+    <p>Hoje sabemos que isso não ocorre: alterações no corpo de um indivíduo (como um músculo mais forte) não modificam o DNA das células germinativas (óvulos e espermatozoides), então não são geneticamente herdadas. Ainda assim, Lamarck teve o mérito histórico de romper com o fixismo e propor mecanismos testáveis.</p>
+
+    <h4>Darwin, Wallace e a seleção natural</h4>
+    <p>Charles Darwin desenvolveu sua teoria após a viagem de cinco anos a bordo do navio <i>HMS Beagle</i> (1831–1836), observando a fauna da América do Sul e, especialmente, das ilhas Galápagos, onde tentilhões (pássaros) de ilhas diferentes apresentavam bicos com formatos distintos, adaptados a diferentes fontes de alimento — um dos exemplos mais citados de adaptação por seleção natural.</p>
+    <p>Darwin também foi influenciado pelo economista Thomas Malthus, que descreveu como populações crescem mais rápido do que os recursos disponíveis, gerando uma "luta pela existência". A partir disso, Darwin propôs a <b>seleção natural</b>: em uma população há variação natural hereditária entre os indivíduos; diante de recursos limitados, os indivíduos com características mais vantajosas para o ambiente sobrevivem e se reproduzem mais, deixando mais descendentes — o que muda gradualmente a composição genética da população ao longo de gerações.</p>
+    <div class="curio-box"><span class="tag">Curiosidade</span><p>O naturalista Alfred Russel Wallace chegou a conclusões muito parecidas às de Darwin de forma independente, também observando a natureza tropical (no arquipélago Malaio e na Amazônia, onde chegou a viver e coletar espécimes). Os dois apresentaram suas ideias juntos, em 1858, numa reunião da Sociedade Linneana de Londres, antes de Darwin publicar "A Origem das Espécies" em 1859.</p></div>
+
+    <h4>Neodarwinismo (Teoria Sintética da Evolução)</h4>
+    <p>No século XX, a <b>Teoria Sintética</b> combinou o Darwinismo com a genética de populações (que nem Darwin nem Mendel conheciam completamente em vida), explicando a origem da variabilidade hereditária por meio de <b>mutações</b> e <b>recombinação gênica</b> — sobre as quais a seleção natural, a deriva genética e o fluxo gênico atuam, moldando a frequência dos alelos em uma população ao longo do tempo.</p>
+    <p><b>Aptidão (fitness)</b> é a capacidade relativa de um indivíduo sobreviver e deixar descendentes férteis em determinado ambiente — não significa necessariamente "o mais forte", mas sim o mais bem ajustado às pressões daquele ambiente específico.</p>
+
+    <div class="example-box"><span class="tag">Exemplo clássico pós-Darwin</span>
+    A mariposa <i>Biston betularia</i>, na Inglaterra, tinha originalmente coloração clara, camuflada em troncos de árvores cobertos de líquen. Com a Revolução Industrial, a fuligem escureceu os troncos, e mariposas escuras (mutação já existente na população, em baixa frequência) passaram a ser mais bem camufladas e menos predadas por pássaros — sua frequência disparou. É o chamado "melanismo industrial", um dos exemplos mais didáticos de seleção natural documentada em tempo real.
+    </div>`,
+    flash:[
+      {f:'Ideia central do Lamarckismo?', b:'Características adquiridas durante a vida (por uso ou desuso de órgãos) seriam transmitidas aos descendentes.'},
+      {f:'Mecanismo central proposto por Darwin?', b:'A seleção natural: indivíduos mais aptos sobrevivem e se reproduzem mais, deixando mais descendentes.'},
+      {f:'Principal crítica ao Lamarckismo hoje aceita?', b:'Características adquiridas (não genéticas) não alteram o DNA das células germinativas, logo não são herdadas.'},
+      {f:'O que o Neodarwinismo acrescentou ao Darwinismo?', b:'A explicação da origem da variabilidade genética por mutações e recombinação, unindo Darwinismo à genética de populações.'},
+      {f:'O que é "aptidão" (fitness) na seleção natural?', b:'A capacidade relativa de um indivíduo sobreviver e deixar descendentes férteis em um ambiente.'},
+    ],
+    quiz:[
+      {q:'Para Lamarck, o pescoço longo da girafa seria resultado de:', opts:['seleção natural sobre variações pré-existentes','uso contínuo do pescoço, transmitido aos descendentes','mutação genética ao acaso','deriva genética','migração de girafas de pescoço longo'], correct:1},
+      {q:'Para Darwin, o pescoço longo da girafa seria explicado por:', opts:['esforço individual transmitido geneticamente','variação já existente na população, sendo selecionados os mais aptos','vontade da espécie de evoluir','ausência de predadores','mutação induzida durante a vida'], correct:1},
+      {q:'A Teoria Sintética combina o Darwinismo com:', opts:['fixismo','genética de populações (mutação e recombinação)','lamarckismo','criacionismo','design inteligente'], correct:1},
+      {q:'"Uso e desuso" é um conceito associado a:', opts:['Darwin','Mendel','Lamarck','Watson e Crick','De Vries'], correct:2},
+      {q:'A seleção natural atua sobre:', opts:['o desejo dos indivíduos','a variação hereditária já existente numa população','apenas mutações letais','características adquiridas no ambiente','apenas caracteres neutros'], correct:1},
+    ]
+  },
+  {
+    id:'evo2', bim:4, code:'EVO-02', title:'Evidências, Mecanismos e Especiação',
+    meta:'Fósseis, órgãos homólogos, deriva gênica e isolamento reprodutivo',
+    resumo:`<h4>As evidências que sustentam a evolução</h4>
+    <p>A teoria da evolução não se baseia em uma única prova, mas na convergência de diversas linhas de evidência independentes:</p>
+    <ul>
+      <li><b>Registro fóssil</b>: mostra mudanças graduais ao longo do tempo geológico e revela <b>fósseis de transição</b>, como o <i>Tiktaalik</i> (peixe com características de tetrápode, ligando peixes a vertebrados terrestres) e o <i>Archaeopteryx</i> (com penas de ave e características de réptil, ligando dinossauros a aves).</li>
+      <li><b>Anatomia comparada</b>: compara a estrutura de órgãos entre espécies. Órgãos <b>homólogos</b> têm a mesma origem embrionária, ainda que exerçam funções diferentes — o braço humano, a asa do morcego, a nadadeira da baleia e a pata do cavalo compartilham o mesmo padrão ósseo básico, evidenciando ancestralidade comum. Já órgãos <b>análogos</b> têm a mesma função, mas origens evolutivas diferentes — a asa do inseto e a da ave, por exemplo, evoluíram de forma independente (evolução convergente).</li>
+      <li><b>Órgãos vestigiais</b>: estruturas reduzidas, sem função clara no organismo atual, mas que eram funcionais em ancestrais — como o apêndice cecal humano e os pequenos ossos pélvicos residuais encontrados em baleias, vestígios de ancestrais terrestres com patas traseiras.</li>
+      <li><b>Embriologia comparada</b>: embriões de vertebrados muito diferentes (peixes, répteis, aves, mamíferos) apresentam semelhanças notáveis em estágios iniciais do desenvolvimento, incluindo estruturas semelhantes a fendas branquiais, o que sugere um plano corporal ancestral compartilhado.</li>
+      <li><b>Bioquímica e biologia molecular</b>: quanto mais próximo o parentesco evolutivo entre duas espécies, maior a semelhança na sequência do DNA e das proteínas — é essa lógica que permite construir árvores filogenéticas moleculares hoje.</li>
+    </ul>
+
+    <h4>Mecanismos evolutivos além da seleção natural</h4>
+    <p>Além da seleção natural, outros mecanismos alteram as frequências alélicas de uma população ao longo de gerações:</p>
+    <ul>
+      <li><b>Mutação</b>: fonte primária de toda variação genética nova.</li>
+      <li><b>Deriva genética</b>: variação ao acaso (não seletiva) nas frequências alélicas, com efeito muito mais forte em populações pequenas. Dois casos especiais importantes: o <b>efeito gargalo</b> (bottleneck), quando um evento catastrófico reduz drasticamente uma população, restando por acaso apenas uma amostra pouco representativa da variabilidade genética original; e o <b>efeito fundador</b>, quando um pequeno grupo de indivíduos coloniza um novo ambiente isolado, carregando apenas uma fração dos alelos da população original.</li>
+      <li><b>Fluxo gênico</b>: troca de alelos entre populações por migração e cruzamento, que tende a homogeneizar as diferenças genéticas entre elas.</li>
+    </ul>
+
+    <h4>Especiação: como surgem novas espécies</h4>
+    <p><b>Especiação</b> é o processo de formação de novas espécies a partir de populações de uma espécie ancestral comum, geralmente por meio do <b>isolamento reprodutivo</b> — mecanismos que impedem o cruzamento (e, portanto, o fluxo gênico) entre grupos, permitindo que acumulem diferenças genéticas independentes até se tornarem incapazes de gerar descendentes férteis entre si.</p>
+    <ul>
+      <li><b>Especiação alopátrica</b> (a mais comum): ocorre por <b>isolamento geográfico</b> — um rio, uma cadeia de montanhas ou um oceano separa fisicamente duas populações, que evoluem separadamente até não conseguirem mais se cruzar.</li>
+      <li><b>Especiação simpátrica</b>: ocorre sem barreira geográfica, dentro da mesma área, geralmente por isolamento ecológico, comportamental ou por poliploidia (comum em plantas).</li>
+    </ul>
+    <p>Os mecanismos de isolamento reprodutivo podem ser <b>pré-zigóticos</b> (impedem a fecundação: isolamento sazonal, comportamental, mecânico) ou <b>pós-zigóticos</b> (a fecundação ocorre, mas o híbrido é inviável ou estéril — como a mula, híbrido de égua e jumento, que geralmente não se reproduz).</p>
+
+    <div class="curio-box"><span class="tag">Exemplo regional</span><p>A bacia amazônica, com seus grandes rios funcionando como barreiras geográficas, é um dos maiores "laboratórios naturais" de especiação alopátrica do planeta. Diversos grupos de peixes, sapos-de-flecha e primatas apresentam espécies distintas em margens opostas do mesmo rio — um padrão que ajudou biólogos a entender como a geografia amazônica impulsionou a altíssima biodiversidade da região, retomada em ECO-02.</p></div>`,
+    flash:[
+      {f:'Diferença entre órgãos homólogos e análogos?', b:'Homólogos: mesma origem embrionária, funções podem ser diferentes (braço humano/asa de morcego). Análogos: mesma função, origens diferentes (asa de inseto/de ave).'},
+      {f:'O que é deriva genética?', b:'Alteração aleatória nas frequências alélicas de uma população, mais intensa em populações pequenas.'},
+      {f:'O que é fluxo gênico?', b:'Troca de alelos entre populações diferentes por migração e cruzamento.'},
+      {f:'O que caracteriza a especiação alopátrica?', b:'Formação de novas espécies a partir do isolamento geográfico, que impede o fluxo gênico entre populações.'},
+      {f:'Qual evidência compara o desenvolvimento embrionário entre espécies?', b:'A embriologia comparada, que mostra semelhanças entre embriões de espécies com ancestral comum.'},
+    ],
+    quiz:[
+      {q:'Órgãos com mesma origem embrionária, mas que podem ter funções diferentes, são chamados de:', opts:['análogos','vestigiais','homólogos','artificiais','neutros'], correct:2},
+      {q:'A deriva genética tem maior impacto em:', opts:['populações muito grandes','populações pequenas','populações sem reprodução','qualquer população, igualmente','apenas em bactérias'], correct:1},
+      {q:'O principal fator da especiação alopátrica é:', opts:['mutação letal','isolamento geográfico entre populações','deriva genética instantânea','poliploidia obrigatória','seleção sexual apenas'], correct:1},
+      {q:'A semelhança entre embriões de peixes, aves e mamíferos é evidência chamada de:', opts:['anatomia comparada','embriologia comparada','bioquímica comparada','paleontologia','biogeografia'], correct:1},
+      {q:'O fluxo gênico entre duas populações tende a:', opts:['aumentar as diferenças genéticas entre elas','reduzir as diferenças, homogeneizando alelos','impedir totalmente a reprodução','causar extinção imediata','não ter efeito genético'], correct:1},
+    ]
+  },
+  {
+    id:'eco1', bim:4, code:'ECO-01', title:'Relações Ecológicas e Fluxo de Energia',
+    meta:'Cadeias alimentares, níveis tróficos e interações entre espécies',
+    resumo:`<p>Os <b>níveis de organização</b> da ecologia, do menor ao maior, são: indivíduo → população → comunidade (ou biocenose) → ecossistema → biosfera. Um <b>ecossistema</b> é o conjunto formado pela comunidade de seres vivos (biocenose) e o ambiente físico onde vivem (biótopo), incluindo todas as interações entre eles.</p>
+
+    <h4>Relações intraespecíficas</h4>
+    <p>Ocorrem entre indivíduos da <b>mesma</b> espécie. Podem ser harmônicas — como a <b>sociedade</b> (indivíduos cooperam, com divisão de trabalho, mas permanecem fisicamente separados, como em uma colônia de abelhas ou formigas) e a <b>colônia</b> (indivíduos permanecem fisicamente unidos, como os pólipos de coral) — ou desarmônicas, como a <b>competição intraespecífica</b>, disputa por recursos (alimento, território, parceiros) entre indivíduos da mesma espécie, geralmente a forma de competição mais intensa, já que indivíduos da mesma espécie precisam exatamente dos mesmos recursos.</p>
+
+    <h4>Relações interespecíficas</h4>
+    <p>Ocorrem entre espécies <b>diferentes</b>. As principais são:</p>
+    <ul>
+      <li><b>Mutualismo</b>: ambas as espécies se beneficiam, geralmente com dependência mútua para sobreviver — como abelhas que polinizam flores em troca de néctar, ou as formigas-cortadeiras da Amazônia, que cultivam um fungo (que digere a celulose das folhas cortadas) e dele se alimentam, enquanto o fungo obtém alimento e proteção.</li>
+      <li><b>Protocooperação</b>: ambas se beneficiam, mas sem dependência obrigatória — como o peixe-limpador que remove parasitas de peixes maiores, se alimentando deles, sem que essa relação seja indispensável para nenhuma das duas espécies.</li>
+      <li><b>Comensalismo</b>: uma espécie se beneficia, e a outra não é significativamente afetada — como a rêmora, que se prende ao tubarão para se locomover e se alimentar de restos de sua caça.</li>
+      <li><b>Parasitismo</b>: uma espécie (o parasita) se beneficia às custas da outra (o hospedeiro), geralmente sem matá-la imediatamente — como vermes intestinais ou o mosquito <i>Anopheles</i>, vetor do parasita causador da malária, doença historicamente relevante na região amazônica.</li>
+      <li><b>Predatismo</b>: uma espécie (predador) mata e se alimenta de outra (presa).</li>
+      <li><b>Competição interespecífica</b>: espécies diferentes disputam o mesmo recurso limitado no ambiente.</li>
+    </ul>
+
+    <h4>Fluxo de energia e níveis tróficos</h4>
+    <p>A <b>cadeia alimentar</b> é uma sequência linear e simplificada de transferência de energia entre organismos: produtores → consumidores primários → consumidores secundários → consumidores terciários → decompositores. A <b>teia alimentar</b> é o conjunto de várias cadeias interligadas, retratando de forma mais realista as múltiplas relações alimentares de um ecossistema.</p>
+
+    <div class="example-box"><span class="tag">Exemplo de cadeia alimentar amazônica</span>
+    Fitoplâncton (produtor) → pequenos peixes herbívoros → tucunaré (predador) → ariranha (predador de topo)<br>
+    Em cada seta, apenas cerca de <b>10% da energia</b> disponível em um nível trófico é transferida ao nível seguinte (regra dos 10%) — o restante é usado na respiração celular do próprio organismo ou perdido como calor. Por isso as cadeias alimentares raramente têm mais de 4 ou 5 elos: não sobra energia suficiente para sustentar mais um nível.
+    </div>
+
+    <p>Essa perda progressiva de energia é representada pelas <b>pirâmides ecológicas</b>, que podem ser de números (quantidade de indivíduos por nível), de biomassa (massa total de matéria orgânica por nível) ou de energia (sempre em formato de pirâmide "normal", já que a energia disponível necessariamente diminui a cada nível trófico, sem exceções).</p>
+
+    <p>O <b>fluxo de energia</b> em um ecossistema é <b>unidirecional</b>: entra pela luz solar, é convertida em energia química pelos produtores na fotossíntese, passa pelos níveis tróficos e se dissipa progressivamente como calor — diferente da <b>matéria</b> (carbono, nitrogênio, água), que é reciclada continuamente entre os seres vivos e o ambiente físico, como veremos em ECO-02.</p>`,
+    flash:[
+      {f:'Diferença entre cadeia e teia alimentar?', b:'A cadeia é uma sequência linear simples; a teia é o conjunto de várias cadeias interligadas, mais próximo da realidade.'},
+      {f:'O que caracteriza o mutualismo?', b:'Ambas as espécies são beneficiadas e, em geral, dependem uma da outra para sobreviver.'},
+      {f:'Exemplo de parasitismo?', b:'Uma lombriga que vive às custas de um hospedeiro humano, causando-lhe prejuízo.'},
+      {f:'Por que o fluxo de energia é unidirecional?', b:'A energia entra pela luz solar, passa pelos níveis tróficos e se dissipa como calor, não retornando ao sistema — diferente da matéria, que é reciclada.'},
+      {f:'O que é competição intraespecífica?', b:'Disputa por recursos (alimento, espaço, parceiros) entre indivíduos da mesma espécie.'},
+    ],
+    quiz:[
+      {q:'A relação entre abelhas e flores, em que ambas se beneficiam, é:', opts:['parasitismo','comensalismo','mutualismo','predatismo','competição'], correct:2},
+      {q:'Em uma pirâmide de energia, a energia disponível:', opts:['aumenta a cada nível trófico','diminui a cada nível, por perda como calor','permanece constante','é reciclada ao produtor','não se relaciona aos níveis tróficos'], correct:1},
+      {q:'Rêmoras que se prendem a tubarões para se locomover, sem prejudicar nem beneficiar o tubarão, exemplificam:', opts:['mutualismo','comensalismo','parasitismo','predatismo','competição'], correct:1},
+      {q:'Organismos da mesma espécie vivendo numa mesma área, num dado momento, formam uma:', opts:['comunidade','população','bioma','ecossistema','biosfera'], correct:1},
+      {q:'A diferença fundamental entre o ciclo da matéria e o fluxo de energia é:', opts:['ambos são cíclicos','a matéria é reciclada; a energia flui em um sentido e se dissipa','a energia é reciclada e a matéria não','nenhum dos dois se repete','matéria e energia não se relacionam'], correct:1},
+    ]
+  },
+  {
+    id:'eco2', bim:4, code:'ECO-02', title:'Ciclos Biogeoquímicos e Biomas',
+    meta:'Ciclo da água e do nitrogênio, Amazônia e impactos ambientais',
+    resumo:`<p>Os <b>ciclos biogeoquímicos</b> descrevem como elementos essenciais à vida (carbono, nitrogênio, água) circulam continuamente entre os seres vivos (fase biológica) e o ambiente físico — solo, água, atmosfera (fase geoquímica).</p>
+
+    <h4>Ciclo do carbono</h4>
+    <p>O CO₂ atmosférico é fixado pelos produtores na <b>fotossíntese</b>, convertido em matéria orgânica, e retorna à atmosfera pela <b>respiração celular</b> de todos os seres vivos, pela decomposição de matéria orgânica morta e pela <b>queima de combustíveis fósseis</b> e vegetação (fator humano que tem intensificado o efeito estufa). Florestas tropicais como a Amazônia funcionam como um enorme <b>estoque (sumidouro) de carbono</b>, retido na biomassa das árvores.</p>
+
+    <h4>Ciclo do nitrogênio</h4>
+    <p>Apesar de o nitrogênio (N₂) ser o gás mais abundante na atmosfera, plantas não conseguem absorvê-lo diretamente nessa forma. O ciclo depende de etapas realizadas por microrganismos:</p>
+    <ul>
+      <li><b>Fixação</b>: bactérias fixadoras (algumas vivendo em associação mutualística com raízes de leguminosas) convertem N₂ atmosférico em amônia (NH₃), forma que pode entrar na cadeia biológica.</li>
+      <li><b>Nitrificação</b>: outras bactérias convertem amônia em nitrito e depois em nitrato (NO₃⁻), a forma que as plantas efetivamente absorvem pelas raízes.</li>
+      <li><b>Amonificação</b>: decompositores liberam compostos nitrogenados ao decompor matéria orgânica morta (restos de organismos, fezes), devolvendo nitrogênio ao solo.</li>
+      <li><b>Desnitrificação</b>: bactérias desnitrificantes convertem nitrato de volta em N₂ gasoso, devolvendo-o à atmosfera e fechando o ciclo.</li>
+    </ul>
+
+    <h4>Ciclo da água</h4>
+    <p>Envolve evaporação (de rios, lagos, oceanos), <b>evapotranspiração</b> (evaporação somada à transpiração das plantas), condensação, precipitação e infiltração/escoamento. Florestas densas como a Amazônia têm papel gigantesco nesse ciclo em escala continental.</p>
+
+    <h4>Biomas: o exemplo da Amazônia</h4>
+    <p>Um <b>bioma</b> é um grande conjunto de ecossistemas com vegetação, clima e fauna característicos, adaptados às mesmas condições ambientais regionais. O Brasil abriga seis biomas principais: Amazônia, Cerrado, Mata Atlântica, Caatinga, Pantanal e Pampa — cada um com adaptações vegetais próprias às condições locais de solo, chuva e temperatura.</p>
+    <p>A <b>Floresta Amazônica</b>, presente no Pará, é o bioma de maior biodiversidade do planeta e não é uniforme: os ecólogos distinguem, entre outras, a <b>mata de terra firme</b> (nunca alagada, sobre solo mais elevado), a <b>várzea</b> (planície alagada periodicamente por rios de água barrenta, rica em sedimentos) e o <b>igapó</b> (floresta alagada quase o ano todo por rios de água escura, mais pobre em nutrientes). Essa diversidade de ambientes dentro da própria Amazônia explica parte da sua altíssima biodiversidade.</p>
+    <p>A floresta tem papel central na regulação do clima global — armazena grandes quantidades de carbono e movimenta enormes volumes de água por meio dos chamados <b>"rios voadores"</b>: correntes de vapor liberadas pela evapotranspiração de bilhões de árvores, que se deslocam pela atmosfera e influenciam diretamente o regime de chuvas em regiões como o Centro-Oeste e o Sudeste do Brasil.</p>
+
+    <h4>Sucessão ecológica</h4>
+    <p><b>Sucessão ecológica</b> é o processo de mudança gradual e ordenada de uma comunidade ao longo do tempo, até atingir um estágio relativamente estável (comunidade clímax):</p>
+    <ul>
+      <li><b>Primária</b>: ocorre em ambiente sem vida prévia e sem solo desenvolvido (ex: rocha nua exposta após um vulcão) — processo mais lento, começando por espécies pioneiras como líquens, que ajudam a formar solo.</li>
+      <li><b>Secundária</b>: ocorre em ambiente que já teve vida e foi parcialmente destruído, mas mantém solo formado e banco de sementes — processo mais rápido, comum em áreas de floresta que sofreram queimada ou corte seletivo.</li>
+    </ul>
+
+    <h4>Impactos ambientais</h4>
+    <p>O <b>desmatamento</b> e as <b>queimadas</b> fragmentam habitats (isolando populações e dificultando o fluxo gênico — conceito retomado de EVO-02), reduzem a biodiversidade, alteram o ciclo hídrico local e regional (menos evapotranspiração, menos "rios voadores") e liberam de volta à atmosfera o carbono antes estocado na vegetação, agravando o efeito estufa.</p>
+    <div class="curio-box"><span class="tag">Curiosidade / debate científico atual</span><p>Cientistas do clima discutem hoje o conceito de <b>"ponto de não retorno" (tipping point)</b> da Amazônia: a partir de certo nível de desmatamento acumulado, a floresta perderia a capacidade de manter seu próprio ciclo de chuvas, podendo se transformar gradualmente em um ecossistema de savana — um processo às vezes chamado de "savanização". É um tema frequente em redações e questões de Geografia e Biologia no ENEM.</p></div>`,
+    flash:[
+      {f:'O que são "rios voadores"?', b:'Correntes de vapor liberadas pela evapotranspiração da Amazônia, que se deslocam pela atmosfera e influenciam as chuvas em outras regiões do Brasil.'},
+      {f:'Diferença entre sucessão primária e secundária?', b:'Primária: ambiente sem vida prévia (ex: rocha nua). Secundária: ambiente que já teve vida e mantém solo, mesmo após perturbação.'},
+      {f:'Papel dos decompositores no ciclo do nitrogênio?', b:'Decompõem matéria orgânica, liberando compostos nitrogenados que bactérias convertem em formas utilizáveis pelas plantas.'},
+      {f:'Por que a Amazônia é essencial para o clima global?', b:'Armazena grande quantidade de carbono, regula o ciclo da água em escala continental e abriga altíssima biodiversidade.'},
+      {f:'Principal efeito do desmatamento sobre um bioma?', b:'Fragmentação de habitats, perda de biodiversidade, alteração do ciclo hídrico local e liberação de carbono estocado na vegetação.'},
+    ],
+    quiz:[
+      {q:'Os "rios voadores" da Amazônia estão relacionados principalmente ao ciclo:', opts:['do carbono','do nitrogênio','da água (evapotranspiração)','do fósforo','do enxofre'], correct:2},
+      {q:'Uma área que sofreu incêndio, mas manteve solo e sementes viáveis, tende a passar por:', opts:['sucessão primária','sucessão secundária','especiação alopátrica','deriva continental','fotossíntese acelerada'], correct:1},
+      {q:'Bactérias fixadoras de nitrogênio são importantes porque:', opts:['convertem N2 atmosférico em formas absorvíveis pelas plantas','produzem oxigênio puro','eliminam CO2 diretamente da atmosfera','substituem os decompositores','atuam só em ambientes marinhos'], correct:0},
+      {q:'O desmatamento da Amazônia afeta o regime de chuvas em outras regiões principalmente por reduzir:', opts:['a produção local de oxigênio','a evapotranspiração, que alimenta os "rios voadores"','a temperatura do solo','o número de rios subterrâneos','a radiação solar incidente'], correct:1},
+      {q:'A Amazônia é um dos biomas mais importantes do planeta principalmente por sua:', opts:['baixa biodiversidade e clima estável','altíssima biodiversidade e papel na regulação climática global','ausência de decompositores','pequena extensão territorial','função exclusivamente turística'], correct:1},
+    ]
+  },
+];
+
+/* ============ STATE & STORAGE ============ */
+let PROGRESS = {}; // { topicId: { bestScore: n, flashSeen: Set-as-array } }
+let state = { tab:'home', topicId:null, subtab:'resumo' };
+
+async function loadProgress(){
+  try{
+    const r = await window.storage.get('bio2-progress-v1');
+    if(r && r.value) PROGRESS = JSON.parse(r.value);
+  }catch(e){ PROGRESS = {}; }
+}
+async function saveProgress(){
+  try{ await window.storage.set('bio2-progress-v1', JSON.stringify(PROGRESS)); }catch(e){}
+}
+function ensureTopicProgress(id){
+  if(!PROGRESS[id]) PROGRESS[id] = { bestScore:0, flashSeen:[] };
+  return PROGRESS[id];
+}
+
+/* ============ HELPERS ============ */
+function daysUntil(dateStr){
+  const now = new Date();
+  const target = new Date(dateStr+'T23:59:59');
+  const diff = Math.ceil((target - now) / 86400000);
+  return diff;
+}
+function fmtDate(dateStr){
+  const d = new Date(dateStr+'T12:00:00');
+  return d.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric'});
+}
+function topicById(id){ return TOPICS.find(t=>t.id===id); }
+
+/* ============ RENDER: TABS ============ */
+function renderMainTabs(){
+  const tabs = [
+    {id:'home', label:'Início'},
+    {id:'bim3', label:'3º Bimestre · Genética'},
+    {id:'bim4', label:'4º Bimestre · Evolução & Ecologia'},
+    {id:'progress', label:'Meu Progresso'},
+  ];
+  const nav = document.getElementById('mainTabs');
+  nav.innerHTML = tabs.map(t=>`<button data-tab="${t.id}" class="${state.tab===t.id?'active':''}">${t.label}</button>`).join('');
+  nav.querySelectorAll('button').forEach(b=>{
+    b.onclick = ()=>{ state.tab=b.dataset.tab; state.topicId=null; render(); };
+  });
+}
+
+/* ============ RENDER: HOME ============ */
+function renderHome(){
+  const d3 = daysUntil(CAL.fim3Bim);
+  const d4 = daysUntil(CAL.fim4Bim);
+  const box3 = d3 >= 0
+    ? `<div class="count-box"><span class="label">3º Bimestre encerra em</span><div class="num">${d3}<small> dias</small></div><div class="date">até ${fmtDate(CAL.fim3Bim)} — conteúdo de Genética</div></div>`
+    : `<div class="count-box done"><span class="label">3º Bimestre</span><div class="num">✓</div><div class="date">Encerrado em ${fmtDate(CAL.fim3Bim)}</div></div>`;
+  const box4 = d4 >= 0
+    ? `<div class="count-box"><span class="label">4º Bimestre encerra em</span><div class="num">${d4}<small> dias</small></div><div class="date">até ${fmtDate(CAL.fim4Bim)} — Evolução &amp; Ecologia</div></div>`
+    : `<div class="count-box done"><span class="label">Ano letivo</span><div class="num">✓</div><div class="date">Encerrado em ${fmtDate(CAL.fim4Bim)}</div></div>`;
+
+  return `
+  <div class="card"><div class="card-inner">
+    <span class="eyebrow">Calendário oficial · SEDUC-PA 2026</span>
+    <h2 class="section-title">Contagem regressiva das avaliações</h2>
+    <p class="sub">Datas baseadas no calendário letivo da Secretaria de Estado de Educação do Pará para o ano letivo de 2026.</p>
+    <div class="countdown-grid">${box3}${box4}</div>
+    <div class="timeline">
+      ${CAL.timeline.map(t=>`<div class="tline-item"><div class="tline-date">${fmtDate(t.date)}</div><div class="tline-text">${t.label}</div></div>`).join('')}
+    </div>
+    <div class="note-box">Este app cobre os conteúdos típicos de Biologia do 2º ano para o 2º semestre: <b>Genética</b> (3º bimestre) e <b>Evolução &amp; Ecologia</b> (4º bimestre). Confira com seu professor se algum tema do seu plano de curso é diferente.</div>
+  </div></div>`;
+}
+
+/* ============ RENDER: TOPIC LIST ============ */
+function renderTopicList(bim){
+  const list = TOPICS.filter(t=>t.bim===bim);
+  const heading = bim===3 ? 'Genética' : 'Evolução & Ecologia';
+  const sub = bim===3 ? '3º Bimestre · 03/08 a 08/10/2026' : '4º Bimestre · 13/10 a 23/12/2026';
+  return `
+  <div class="card"><div class="card-inner">
+    <span class="eyebrow">${sub}</span>
+    <h2 class="section-title">${heading}</h2>
+    <p class="sub">Toque em um tema para ver o resumo, revisar com flashcards e fazer o simulado.</p>
+    <div class="topic-list">
+      ${list.map(t=>{
+        const p = PROGRESS[t.id];
+        const pillText = p && p.bestScore ? `${p.bestScore}/5 no simulado` : 'não estudado';
+        const pillClass = p && p.bestScore ? '' : 'zero';
+        return `<div class="specimen" data-id="${t.id}">
+          <div>
+            <span class="code">${t.code}</span>
+            <h3>${t.title}</h3>
+            <div class="meta">${t.meta}</div>
+          </div>
+          <div class="progress-pill ${pillClass}">${pillText}</div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div></div>`;
+}
+
+/* ============ RENDER: TOPIC DETAIL ============ */
+let flashIndex = 0;
+let flashFlipped = false;
+let quizIndex = 0;
+let quizScore = 0;
+let quizAnswered = false;
+
+function renderTopicDetail(topic){
+  const backTab = topic.bim===3 ? 'bim3' : 'bim4';
+  let body = '';
+  if(state.subtab==='resumo') body = renderResumo(topic);
+  else if(state.subtab==='flash') body = renderFlashSection(topic);
+  else if(state.subtab==='quiz') body = renderQuizSection(topic);
+
+  return `
+  <button class="backlink" id="backBtn">← voltar para a lista</button>
+  <div class="card"><div class="card-inner">
+    <span class="eyebrow">${topic.code} · ${topic.bim}º bimestre</span>
+    <h2 class="section-title">${topic.title}</h2>
+    <div class="subtabs">
+      <button data-sub="resumo" class="${state.subtab==='resumo'?'active':''}">Resumo</button>
+      <button data-sub="flash" class="${state.subtab==='flash'?'active':''}">Flashcards</button>
+      <button data-sub="quiz" class="${state.subtab==='quiz'?'active':''}">Simulado</button>
+    </div>
+    ${body}
+  </div></div>`;
+}
+
+function renderResumo(topic){
+  return `<div class="resumo-body">${topic.resumo}</div>`;
+}
+
+function renderFlashSection(topic){
+  const card = topic.flash[flashIndex];
+  return `
+  <div class="flash-wrap">
+    <div class="flash-count">Carta ${flashIndex+1} de ${topic.flash.length}</div>
+    <div class="flashcard ${flashFlipped?'flipped':''}" id="flashCard">
+      <div class="flashcard-inner">
+        <div class="flash-face flash-front">${card.f}</div>
+        <div class="flash-face flash-back">${card.b}<span class="flash-hint">toque para voltar</span></div>
+      </div>
+    </div>
+    <div class="flash-nav">
+      <button class="btn ghost" id="flashPrev" ${flashIndex===0?'disabled':''}>← Anterior</button>
+      <button class="btn" id="flashNext" ${flashIndex===topic.flash.length-1?'disabled':''}>Próxima →</button>
+    </div>
+  </div>`;
+}
+
+function renderQuizSection(topic){
+  if(quizIndex >= topic.quiz.length){
+    const pct = Math.round((quizScore/topic.quiz.length)*100);
+    return `
+    <div class="quiz-result">
+      <div class="score">${quizScore}/${topic.quiz.length}</div>
+      <p>${pct}% de acertos em ${topic.title}</p>
+      <button class="btn" id="quizRestart">Refazer simulado</button>
+    </div>`;
+  }
+  const q = topic.quiz[quizIndex];
+  return `
+  <div class="quiz-progress">Questão ${quizIndex+1} de ${topic.quiz.length}</div>
+  <div class="quiz-q">${q.q}</div>
+  <div id="quizOpts">
+    ${q.opts.map((o,i)=>`<button class="opt" data-i="${i}">${o}</button>`).join('')}
+  </div>
+  <div class="quiz-feedback" id="quizFeedback" style="display:none;"></div>
+  <button class="btn" id="quizNext" style="display:none;">Próxima questão →</button>
+  `;
+}
+
+/* ============ RENDER: PROGRESS ============ */
+function renderProgress(){
+  return `
+  <div class="card"><div class="card-inner">
+    <span class="eyebrow">Meu Herbário</span>
+    <h2 class="section-title">Progresso nos simulados</h2>
+    <p class="sub">Sua melhor pontuação salva em cada tema, guardada neste dispositivo.</p>
+    ${TOPICS.map(t=>{
+      const p = PROGRESS[t.id] || {bestScore:0};
+      const pct = Math.round((p.bestScore/5)*100);
+      return `<div class="prog-row">
+        <div class="pname">${t.code} — ${t.title}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+        <div class="prog-num">${p.bestScore}/5</div>
+      </div>`;
+    }).join('')}
+  </div></div>`;
+}
+
+/* ============ MAIN RENDER ============ */
+function render(){
+  renderMainTabs();
+  const app = document.getElementById('app');
+  if(state.tab==='home'){
+    app.innerHTML = renderHome();
+  } else if(state.tab==='progress'){
+    app.innerHTML = renderProgress();
+  } else if(state.tab==='bim3' || state.tab==='bim4'){
+    if(state.topicId){
+      const topic = topicById(state.topicId);
+      app.innerHTML = renderTopicDetail(topic);
+      bindTopicDetailEvents(topic);
+    } else {
+      app.innerHTML = renderTopicList(state.tab==='bim3'?3:4);
+      app.querySelectorAll('.specimen').forEach(el=>{
+        el.onclick = ()=>{
+          state.topicId = el.dataset.id;
+          state.subtab='resumo';
+          flashIndex=0; flashFlipped=false;
+          quizIndex=0; quizScore=0;
+          render();
+        };
+      });
+    }
+  }
+}
+
+function bindTopicDetailEvents(topic){
+  document.getElementById('backBtn').onclick = ()=>{ state.topicId=null; render(); };
+  document.querySelectorAll('[data-sub]').forEach(b=>{
+    b.onclick = ()=>{
+      state.subtab = b.dataset.sub;
+      flashIndex=0; flashFlipped=false;
+      quizIndex=0; quizScore=0;
+      render();
+    };
+  });
+
+  if(state.subtab==='flash'){
+    const cardEl = document.getElementById('flashCard');
+    cardEl.onclick = ()=>{
+      flashFlipped = !flashFlipped;
+      if(flashFlipped){
+        const p = ensureTopicProgress(topic.id);
+        if(!p.flashSeen.includes(flashIndex)){ p.flashSeen.push(flashIndex); saveProgress(); }
+      }
+      render();
+      bindTopicDetailEvents(topic);
+    };
+    const prevBtn = document.getElementById('flashPrev');
+    const nextBtn = document.getElementById('flashNext');
+    if(prevBtn) prevBtn.onclick = (e)=>{ e.stopPropagation(); if(flashIndex>0){flashIndex--; flashFlipped=false; render(); bindTopicDetailEvents(topic);} };
+    if(nextBtn) nextBtn.onclick = (e)=>{ e.stopPropagation(); if(flashIndex<topic.flash.length-1){flashIndex++; flashFlipped=false; render(); bindTopicDetailEvents(topic);} };
+  }
+
+  if(state.subtab==='quiz'){
+    if(quizIndex < topic.quiz.length){
+      const opts = document.querySelectorAll('#quizOpts .opt');
+      opts.forEach(btn=>{
+        btn.onclick = ()=>{
+          if(quizAnswered) return;
+          quizAnswered = true;
+          const chosen = parseInt(btn.dataset.i);
+          const q = topic.quiz[quizIndex];
+          opts.forEach(o=>o.classList.add('disabled'));
+          opts[q.correct].classList.add('correct');
+          if(chosen !== q.correct){ btn.classList.add('wrong'); }
+          else { quizScore++; }
+          const fb = document.getElementById('quizFeedback');
+          fb.style.display='block';
+          fb.textContent = chosen===q.correct ? 'Certo!' : 'Resposta correta destacada acima.';
+          document.getElementById('quizNext').style.display='inline-block';
+        };
+      });
+      const nextBtn = document.getElementById('quizNext');
+      if(nextBtn) nextBtn.onclick = ()=>{
+        quizIndex++; quizAnswered=false;
+        render(); bindTopicDetailEvents(topic);
+      };
+    } else {
+      const p = ensureTopicProgress(topic.id);
+      if(quizScore > p.bestScore){ p.bestScore = quizScore; saveProgress(); }
+      const restartBtn = document.getElementById('quizRestart');
+      if(restartBtn) restartBtn.onclick = ()=>{
+        quizIndex=0; quizScore=0; quizAnswered=false;
+        render(); bindTopicDetailEvents(topic);
+      };
+    }
+  }
+}
+
+/* ============ INIT ============ */
+(async function init(){
+  await loadProgress();
+  render();
+})();
+</script>
+</body>
+</html>
